@@ -16,7 +16,12 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.1"
+    "@neondatabase/serverless": "^1.0.1",
+    "@orpc/client": "^1.9.4",
+    "@orpc/server": "^1.9.4",
+    "@orpc/tanstack-query": "^1.9.4",
+    "@tanstack/svelte-query": "^6.0.3",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.0.0",
