@@ -1,11 +1,39 @@
-import { os } from '@orpc/server'
+import type { RequestEvent } from '@sveltejs/kit'
+import type { Session, User } from 'better-auth'
+import { ORPCError, os } from '@orpc/server'
 import { z } from 'zod'
 
+// Define context type with session
+export interface Context {
+  event?: RequestEvent
+  session?: Session
+  user?: User
+}
+
+// Base procedure with context
+const baseProcedure = os.$context<Context>()
+
+// Auth procedure that requires authentication
+const authProcedure = baseProcedure.use(async ({ context, next }) => {
+  if (!context.user || !context.session) {
+    throw new ORPCError('UNAUTHORIZED', {
+      message: 'You must be logged in to access this resource',
+    })
+  }
+
+  return next({
+    context: {
+      user: context.user,
+      session: context.session,
+    },
+  })
+})
+
 // Example router with some basic procedures
-export const router = os
+export const router = baseProcedure
   .router({
     // Simple query procedure
-    hello: os
+    hello: baseProcedure
       .input(z.object({ name: z.string().optional() }))
       .handler(async ({ input }) => {
         return {
@@ -15,7 +43,7 @@ export const router = os
       }),
 
     // Get user by ID
-    getUser: os
+    getUser: baseProcedure
       .input(z.object({ id: z.number() }))
       .handler(async ({ input }) => {
         // Simulate database query
@@ -28,7 +56,7 @@ export const router = os
       }),
 
     // List users with pagination
-    listUsers: os
+    listUsers: baseProcedure
       .input(
         z.object({
           limit: z.number().min(1).max(100).default(10),
@@ -53,7 +81,7 @@ export const router = os
       }),
 
     // Mutation example - create user
-    createUser: os
+    createUser: baseProcedure
       .input(
         z.object({
           name: z.string().min(1),
@@ -71,7 +99,7 @@ export const router = os
       }),
 
     // Mutation example - update user
-    updateUser: os
+    updateUser: baseProcedure
       .input(
         z.object({
           id: z.number(),
@@ -88,6 +116,33 @@ export const router = os
           updatedAt: new Date().toISOString(),
         }
       }),
+
+    // Protected procedure example - get current user
+    me: authProcedure
+      .handler(async ({ context }) => {
+        return {
+          user: context.user,
+          session: context.session,
+        }
+      }),
+
+    // Protected procedure example - update profile
+    updateProfile: authProcedure
+      .input(
+        z.object({
+          name: z.string().min(1).optional(),
+          image: z.string().url().optional(),
+        }),
+      )
+      .handler(async ({ input, context }) => {
+        // In a real app, you would update the user in the database
+        return {
+          ...context.user,
+          ...input,
+          updatedAt: new Date(),
+        }
+      }),
   })
 
 export type Router = typeof router
+export { authProcedure, baseProcedure }

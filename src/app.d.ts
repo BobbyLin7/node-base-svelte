@@ -10,7 +10,27 @@ declare global {
 
   namespace App {
     // interface Error {}
-    // interface Locals {}
+    interface Locals {
+      session?: {
+        id: string
+        userId: string
+        expiresAt: Date
+        token: string
+        ipAddress?: string | null
+        userAgent?: string | null
+        createdAt: Date
+        updatedAt: Date
+      }
+      user?: {
+        id: string
+        email: string
+        emailVerified: boolean
+        name: string
+        image?: string | null
+        createdAt: Date
+        updatedAt: Date
+      }
+    }
     // interface PageData {}
     // interface PageState {}
     // interface Platform {}

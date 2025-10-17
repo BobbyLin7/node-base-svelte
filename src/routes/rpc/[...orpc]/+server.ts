@@ -4,10 +4,14 @@ import { RPCHandler } from '@orpc/server/fetch'
 
 const handler = new RPCHandler(router)
 
-async function handle({ request }: RequestEvent) {
-  const { response } = await handler.handle(request, {
+async function handle(event: RequestEvent) {
+  const { response } = await handler.handle(event.request, {
     prefix: '/rpc',
-    context: {}, // Provide initial context if needed
+    context: {
+      event,
+      session: event.locals.session,
+      user: event.locals.user,
+    },
   })
 
   return response ?? new Response('Not Found', { status: 404 })
