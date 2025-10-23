@@ -13,8 +13,12 @@
   })
 </script>
 
-<div class='min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4'>
-  <div class='w-full max-w-md'>
+<div class='flex min-h-svh justify-center bg-muted p-6 md:p-10 gap-6'>
+  <div class='flex flex-col gap-6 w-full max-w-sm'>
+    <a href='/' class='flex justify-center items-center gap-2 font-medium'>
+      <img src='/logo.svg' alt='Logo' width='30' height='30' />
+      <span>NodeBase</span>
+    </a>
     <slot />
   </div>
 </div>

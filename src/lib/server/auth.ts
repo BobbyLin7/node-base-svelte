@@ -4,6 +4,7 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 import { db } from './db'
+import * as schema from './db/schema'
 
 if (!env.BETTER_AUTH_SECRET) {
   throw new Error('BETTER_AUTH_SECRET is not set')
@@ -16,6 +17,7 @@ if (!env.BETTER_AUTH_URL) {
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
+    schema,
   }),
   emailAndPassword: {
     enabled: true,
